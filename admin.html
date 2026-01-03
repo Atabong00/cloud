@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal - Veri-Grade</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <!-- QR Code Lib -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <link rel="stylesheet" href="assets/styles/main.css">
+    <style>
+        .portal-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--color-primary);
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            color: var(--color-secondary);
+            margin-bottom: 30px;
+        }
+
+        .sidebar a {
+            color: #ccc;
+            padding: 12px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            display: block;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .sidebar .logout {
+            margin-top: auto;
+            color: #ff6b6b;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .modal-body {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 500px;
+            max-width: 90%;
+        }
+
+        #qr-canvas {
+            margin-top: 1rem;
+            padding: 10px;
+            background: white;
+            border: 1px solid #ddd;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="portal-layout">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Admin Panel</h2>
+            <a href="#dashboard" class="nav-link active" onclick="showSection('dashboard')">Dashboard</a>
+            <a href="#students" class="nav-link" onclick="showSection('students')">Students</a>
+            <a href="#masters" class="nav-link" onclick="showSection('masters')">Course Masters</a>
+            <a href="#courses" class="nav-link" onclick="showSection('courses')">Courses</a>
+            <a href="#certificates" class="nav-link" onclick="showSection('certificates')">Issuance</a>
+            <a href="#results" class="nav-link" onclick="showSection('results')">Results</a>
+            <a href="#announcements" class="nav-link" onclick="showSection('announcements')">Announcements</a>
+            <a href="#feedbacks" class="nav-link" onclick="showSection('feedbacks')">Feedback</a>
+            <a href="#" class="logout" onclick="AuthService.logout()">Logout</a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="content-section">
+                <header class="section-header">
+                    <h1>Overview</h1>
+                    <span id="admin-name-display" class="badge badge-warning">Admin</span>
+                </header>
+                <div class="grid grid-4">
+                    <div class="card">
+                        <h3>Total Students</h3>
+                        <p id="stat-students" style="font-size: 2rem; font-weight: bold; color: var(--color-primary)">0
+                        </p>
+                    </div>
+                    <div class="card">
+                        <h3>Total Courses</h3>
+                        <p id="stat-courses" style="font-size: 2rem; font-weight: bold; color: var(--color-primary)">0
+                        </p>
+                    </div>
+                    <div class="card">
+                        <h3>Certificates Issued</h3>
+                        <p id="stat-certs" style="font-size: 2rem; font-weight: bold; color: var(--color-primary)">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Management -->
+            <div id="students" class="content-section" style="display:none">
+                <header class="section-header">
+                    <h1>Manage Students</h1>
+                    <button class="btn btn-primary"
+                        onclick="openModal('modal-student'); document.getElementById('add-role').value='student'">Add
+                        Student</button>
+                </header>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Reg No</th>
+                            <th>Enrollments</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-students"></tbody>
+                </table>
+            </div>
+
+            <!-- Master Management -->
+            <div id="masters" class="content-section" style="display:none">
+                <header class="section-header">
+                    <h1>Course Masters</h1>
+                    <button class="btn btn-primary"
+                        onclick="openModal('modal-student'); document.getElementById('add-role').value='master'">Add
+                        Master</button>
+                </header>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Title</th>
+                            <th>Courses Taught</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-masters"></tbody>
+                </table>
+            </div>
+
+            <!-- Course Management -->
+            <div id="courses" class="content-section" style="display:none">
+                <header class="section-header">
+                    <h1>Manage Courses</h1>
+                    <button class="btn btn-primary" onclick="openModal('modal-course')">Add Course</button>
+                </header>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Credits</th>
+                            <th>Instructor</th>
+                            <th>Students</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-courses"></tbody>
+                </table>
+            </div>
+
+            <!-- Certificate Issuance -->
+            <div id="certificates" class="content-section" style="display:none">
+                <header class="section-header">
+                    <h1>Issue Certificates</h1>
+                </header>
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h3>Generate New Certificate</h3>
+                        <select id="cert-student" class="mb-1" onchange="loadStudentCoursesForCert()">
+                            <option>Select Student...</option>
+                        </select>
+
+                        <div
+                            style="margin-bottom:1rem; max-height: 150px; overflow-y: auto; border: 1px solid #ddd; padding: 10px;">
+                            <label style="display:block; font-weight:bold; margin-bottom:5px;">Select Courses:</label>
+                            <div id="cert-courses-checkboxes">
+                                <p class="text-muted" style="font-size:0.9rem">Select a student first.</p>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display:block; font-size: 0.9rem; margin-bottom: 5px;">Expiry Date
+                                (Optional)</label>
+                            <input id="cert-expiry" type="date">
+                        </div>
+                        <button class="btn btn-primary" onclick="generateCertificate()">Generate & Issue</button>
+                    </div>
+                    <div class="card text-center" id="cert-preview" style="display:none">
+                        <h3>Certificate Generated!</h3>
+                        <div id="qr-container"></div>
+                        <p class="mt-1" id="cert-id-display" style="font-weight:bold; font-size:1.2rem;"></p>
+                        <p class="text-muted">This certificate has been saved to the database.</p>
+                    </div>
+                </div>
+                <h3 class="mt-2">Issued History</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Student</th>
+                            <th>Courses</th>
+                            <th>Date</th>
+                            <th>Expiry</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-certs"></tbody>
+                </table>
+            </div>
+
+            <!-- Results (Grading) Publication -->
+            <div id="results" class="content-section" style="display:none">
+                <header class="section-header">
+                    <h1>Result Publication</h1>
+                </header>
+                <div class="card">
+                    <p>Review and publish grades submitted by Course Masters.</p>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Course</th>
+                                <th>Marks</th>
+                                <th>Grade</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-results"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Announcements -->
+            <div id="announcements" class="content-section" style="display:none">
+                <header class="section-header">
+                    <h1>Announcements</h1>
+                </header>
+                <div class="card mb-1">
+                    <h3>Post Notice</h3>
+                    <input type="text" id="announce-title" placeholder="Title (e.g., System Update)">
+                    <textarea id="announce-content" rows="3" placeholder="Message content..."></textarea>
+                    <select id="announce-type">
+                        <option value="notice">General Notice</option>
+                        <option value="alert">Urgent Alert</option>
+                    </select>
+                    <button class="btn btn-primary mt-1" onclick="postAnnouncement()">Post System-Wide</button>
+                </div>
+            </div>
+
+            <!-- Feedback View -->
+            <div id="feedbacks" class="content-section" style="display:none">
+                <header class="section-header">
+                    <h1>User Feedback</h1>
+                </header>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Message</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-feedback"></tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-student" class="modal">
+        <div class="modal-body">
+            <h3>Add New User</h3>
+            <input id="add-name" placeholder="Full Name">
+            <input id="add-email" placeholder="Email">
+            <input id="add-dob" type="date" placeholder="Date of Birth" title="Date of Birth">
+            <input id="add-pass" placeholder="Password" value="123">
+            <select id="add-role">
+                <option value="student">Student</option>
+                <option value="master">Course Master</option>
+            </select>
+            <button class="btn btn-primary" onclick="addUser()">Save</button>
+            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+
+    <div id="modal-course" class="modal">
+        <div class="modal-body">
+            <h3>Add Course</h3>
+            <input id="course-name" placeholder="Course Name">
+            <input id="course-code" placeholder="Code (e.g. CS101)">
+            <input id="course-credits" type="number" placeholder="Credits">
+            <select id="course-master"></select>
+            <button class="btn btn-primary" onclick="addCourse()">Save</button>
+            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+
+    <script src="assets/js/dataService.js"></script>
+    <script src="assets/js/admin.js"></script>
+
+</body>
+
+</html>

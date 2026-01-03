@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CertifyU - Secure Academic Credential Verification</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- QR Code Libs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="assets/styles/main.css">
+
+    <style>
+        /* Landing Specific Styles */
+        .hero {
+            background-color: var(--color-primary);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            color: #fff;
+            font-size: 3.5rem;
+        }
+
+        .hero p {
+            color: #B8C1CC;
+            font-size: 1.25rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .features {
+            padding: 80px 0;
+            background: #fff;
+        }
+
+        .feature-icon {
+            color: var(--color-secondary);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .verification-section {
+            background-color: var(--color-light);
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .verify-box {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        #reader {
+            width: 100%;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">CertifyU</div>
+            <div class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#features">Features</a>
+                <a href="#verify">Verify Certificate</a>
+                <a href="signin.html">Sign In</a>
+            </div>
+            <a href="signup.html" class="btn btn-primary">Get Started</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section id="home" class="hero">
+        <div class="container">
+            <h1>Secure Academic Credential Verification</h1>
+            <p>Empower your institution with blockchain-grade security. Issue, manage, and verify academic certificates
+                with ease and confidence.</p>
+            <div>
+                <a href="signup.html" class="btn btn-primary">Get Started</a>
+                <a href="#verify" class="btn btn-secondary"
+                    style="margin-left: 10px; border-color: #D99D26; color: #D99D26;">Verify Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="text-center mb-1">Why Choose CertifyU?</h2>
+            <div class="grid grid-4 mt-2">
+                <div class="card text-center">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Tamper-Proof</h3>
+                    <p>Certificates are secure and cannot be altered once issued.</p>
+                </div>
+                <div class="card text-center">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Instant Verification</h3>
+                    <p>Verify credentials in seconds using QR codes or ID numbers.</p>
+                </div>
+                <div class="card text-center">
+                    <div class="feature-icon">🎓</div>
+                    <h3>Student Portal</h3>
+                    <p>Students can manage their courses and view results easily.</p>
+                </div>
+                <div class="card text-center">
+                    <div class="feature-icon">🌍</div>
+                    <h3>Global Access</h3>
+                    <p>Access your academic records from anywhere in the world.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Verification Section -->
+    <section id="verify" class="verification-section">
+        <div class="container">
+            <h2>Verify a Certificate</h2>
+            <p class="mb-1">Enter the Certificate ID or Scan the QR Code.</p>
+
+            <div class="verify-box">
+                <div class="tabs flex justify-between mb-1">
+                    <button class="btn btn-sm btn-secondary" onclick="toggleVerifyMode('id')" id="tab-id">By ID</button>
+                    <button class="btn btn-sm btn-secondary" style="border-color:transparent; color: #666;"
+                        onclick="toggleVerifyMode('qr')" id="tab-qr">Scan QR</button>
+                </div>
+
+                <div id="verify-id-form">
+                    <input type="text" id="cert-id-input" placeholder="Enter Certificate ID (e.g. CERT-X9Y2Z)">
+                    <button class="btn btn-primary" style="width:100%" onclick="verifyById()">Verify
+                        Credentials</button>
+                </div>
+
+                <div id="verify-qr-form" style="display:none;">
+                    <button class="btn btn-primary" style="width:100%" onclick="startQRScanner()">📷 Start Camera
+                        Scan</button>
+                    <div id="reader"></div>
+                    <p class="mt-1" id="scan-status" style="font-size: 0.9rem; color: #888;">Camera permission required
+                    </p>
+                    <button id="stop-scan-btn" class="btn btn-sm btn-danger mt-1" style="display:none"
+                        onclick="stopQRScanner()">Stop Access</button>
+                </div>
+
+                <!-- Result Area -->
+                <div id="verify-result" class="mt-1"
+                    style="display:none; text-align: left; padding: 1rem; border-radius: 4px;">
+                    <!-- JS will pop this -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container grid grid-4">
+            <div>
+                <h3>CertifyU</h3>
+                <p style="opacity: 0.8; font-size: 0.9rem;">Advanced academic verification system.</p>
+            </div>
+            <div>
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Contact</h4>
+                <ul>
+                    <li>support@certifyu.com</li>
+                    <li>+1 (555) 123-4567</li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+
+
+    <!-- Scripts -->
+    <script src="assets/js/dataService.js"></script>
+    <script>
+
+
+        // Verification Logic
+        let html5QrcodeScanner = null;
+
+        function toggleVerifyMode(mode) {
+            document.getElementById('verify-id-form').style.display = mode === 'id' ? 'block' : 'none';
+            document.getElementById('verify-qr-form').style.display = mode === 'qr' ? 'block' : 'none';
+            document.getElementById('verify-result').style.display = 'none'; // reset result
+
+            if (mode === 'id' && html5QrcodeScanner) {
+                stopQRScanner();
+            }
+        }
+
+        function verifyById() {
+            const id = document.getElementById('cert-id-input').value.trim();
+            performVerification(id);
+        }
+
+        function startQRScanner() {
+            document.getElementById('scan-status').innerText = "Initializing Camera...";
+            document.getElementById('stop-scan-btn').style.display = 'inline-block';
+
+            html5QrcodeScanner = new Html5Qrcode("reader");
+
+            html5QrcodeScanner.start(
+                { facingMode: "environment" },
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 }
+                },
+                (decodedText, decodedResult) => {
+                    // Success callback
+                    console.log(`Scan result: ${decodedText}`);
+                    stopQRScanner();
+                    performVerification(decodedText);
+                },
+                (errorMessage) => {
+                    // parse error, ignore loop
+                }
+            ).catch(err => {
+                document.getElementById('scan-status').innerText = "Error starting camera: " + err;
+            });
+        }
+
+        function stopQRScanner() {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => {
+                    html5QrcodeScanner.clear();
+                    html5QrcodeScanner = null;
+                    document.getElementById('scan-status').innerText = "Camera Stopped";
+                    document.getElementById('stop-scan-btn').style.display = 'none';
+                }).catch(err => console.error(err));
+            }
+        }
+
+        function performVerification(text) {
+            // text could be a URL or an ID.
+            // If URL, extract ID or just go there.
+            // If ID, go to verify.html?id=ID
+
+            let targetId = text;
+
+            // Check if it's a URL
+            try {
+                const url = new URL(text);
+                const params = new URLSearchParams(url.search);
+                if (params.has('id')) {
+                    targetId = params.get('id');
+                }
+            } catch (e) {
+                // Not a valid URL, assume it's the ID string
+            }
+
+            // Redirect to verification page
+            window.location.href = `verify.html?id=${targetId}`;
+        }
+    </script>
+</body>
+
+</html>

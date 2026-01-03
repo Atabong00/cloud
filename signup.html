@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - CertifyU</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="assets/styles/main.css">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">CertifyU</div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#features">Features</a>
+                <a href="index.html#verify">Verify Certificate</a>
+                <a href="signin.html">Sign In</a>
+            </div>
+            <a href="signup.html" class="btn btn-primary">Get Started</a>
+        </div>
+    </nav>
+
+    <!-- Signup Section -->
+    <section class="verification-section" style="min-height: 80vh; display: flex; align-items: center;">
+        <div class="container">
+            <div class="card" style="max-width: 500px; margin: 0 auto; padding: 2rem;">
+                <h2 class="text-center">Create Account</h2>
+                <p class="text-center mb-1 text-muted">Join CertifyU today</p>
+
+                <form id="signup-form" onsubmit="event.preventDefault(); handleSignup();">
+                    <div>
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" required placeholder="John Doe">
+                    </div>
+
+                    <div>
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" required placeholder="john@example.com">
+                    </div>
+
+                    <div>
+                        <label for="password">Password</label>
+                        <input type="password" id="password" required placeholder="••••••••">
+                    </div>
+
+                    <div>
+                        <label for="confirm-password">Confirm Password</label>
+                        <input type="password" id="confirm-password" required placeholder="••••••••">
+                    </div>
+
+                    <div>
+                        <label for="role">I am a...</label>
+                        <select id="role">
+                            <option value="student">Student</option>
+                            <option value="master">Course Master (Professor)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Sign
+                        Up</button>
+                </form>
+
+                <p class="text-center mt-1">
+                    Already have an account? <a href="signin.html"
+                        style="color: var(--color-secondary); font-weight: bold;">Sign In</a>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container grid grid-4">
+            <div>
+                <h3>CertifyU</h3>
+                <p style="opacity: 0.8; font-size: 0.9rem;">Advanced academic verification system.</p>
+            </div>
+            <div>
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#features">Features</a></li>
+                    <li><a href="signin.html">Sign In</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Contact</h4>
+                <ul>
+                    <li>support@certifyu.com</li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="assets/js/dataService.js"></script>
+    <script>
+        function handleSignup() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const role = document.getElementById('role').value;
+
+            if (password !== confirmPassword) {
+                alert("Passwords do not match!");
+                return;
+            }
+
+            if (DataService.getUserByEmail(email)) {
+                alert("An account with this email already exists.");
+                return;
+            }
+
+            const newUser = {
+                id: DataService.generateId('u'),
+                name: name,
+                email: email,
+                password: password,
+                role: role,
+                // Add specific fields based on role if needed, or defaults
+            };
+
+            if (role === 'student') {
+                // Mock regNo for students
+                newUser.regNo = 'REG' + new Date().getFullYear() + Math.floor(Math.random() * 1000);
+            }
+
+            DataService.add('vg_users', newUser);
+            alert("Account created successfully! Please sign in.");
+            window.location.href = 'signin.html';
+        }
+    </script>
+</body>
+
+</html>

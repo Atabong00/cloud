@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal - Veri-Grade</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <!-- QR Code Lib -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="assets/styles/main.css">
+    <style>
+        .portal-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #004d40;
+            color: white;
+            padding: 20px;
+        }
+
+        /* Green theme for students */
+        .sidebar h2 {
+            color: #80cbc4;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            background: #f4f6f8;
+        }
+
+        .sidebar a {
+            display: block;
+            color: #b2dfdb;
+            padding: 10px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #00695c;
+            color: white;
+        }
+
+        .course-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .print-area {
+            display: none;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            #print-slip,
+            #print-slip * {
+                visibility: visible;
+            }
+
+            #print-slip {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="portal-layout">
+        <div class="sidebar">
+            <h2>Student Panel</h2>
+            <a href="#" class="active" onclick="showSection('dashboard')">Dashboard</a>
+            <a href="#" onclick="showSection('my-courses')">My Courses</a>
+            <a href="#" onclick="showSection('registration')">Registration</a>
+            <a href="#" onclick="showSection('certificates')">My Certificates</a>
+            <a href="#" onclick="showSection('feedback-section')">Feedback</a>
+            <a href="#" onclick="AuthService.logout()" style="color: #ff8a80; margin-top: 2rem;">Logout</a>
+        </div>
+
+        <div class="main-content">
+            <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                <h1>Student Dashboard</h1>
+                <span id="student-name" class="badge badge-success">...</span>
+            </header>
+
+            <!-- Dashboard -->
+            <div id="dashboard" class="content-section">
+                <div class="grid grid-3">
+                    <div class="card">
+                        <h3>Enrolled Courses</h3>
+                        <p id="stat-enrolled" style="font-size: 2rem; font-weight: bold; color: #004d40">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Certificates</h3>
+                        <p id="stat-certs" style="font-size: 2rem; font-weight: bold; color: #004d40">0</p>
+                    </div>
+                </div>
+
+                <div class="mt-2">
+                    <h3>Latest Notices</h3>
+                    <div id="feed-recent"></div>
+                </div>
+            </div>
+
+            <!-- My Courses -->
+            <div id="my-courses" class="content-section" style="display:none">
+                <header class="section-header">
+                    <h2>Active Courses</h2>
+                    <button class="btn btn-primary" onclick="printRegistration()">Print Registration Slip</button>
+                </header>
+                <div id="active-courses-list" class="grid grid-1"></div>
+
+                <!-- Detail View for Board -->
+                <div id="course-board-view"
+                    style="display:none; margin-top:2rem; background:white; padding:1rem; border-radius:8px;">
+                    <h3 id="board-course-title">Board</h3>
+                    <button class="btn btn-sm btn-secondary" onclick="closeBoard()">Close</button>
+                    <div id="board-posts" class="mt-1"></div>
+                </div>
+            </div>
+
+            <!-- Registration -->
+            <div id="registration" class="content-section" style="display:none">
+                <h2>Available Courses</h2>
+                <div id="available-courses-list" class="grid grid-1 mt-1"></div>
+            </div>
+
+            <!-- Certificates -->
+            <div id="certificates" class="content-section" style="display:none">
+                <h2>My Certificates</h2>
+                <div id="certs-list" class="grid grid-2 mt-1"></div>
+            </div>
+
+            <!-- Feedback -->
+            <div id="feedback-section" class="content-section" style="display:none">
+                <h2>Send Feedback</h2>
+                <div class="card" style="max-width: 600px;">
+                    <p class="mb-1">Report issues or send suggestions to the administration.</p>
+                    <textarea id="feedback-msg" rows="4" placeholder="Your message..."></textarea>
+                    <button class="btn btn-primary mt-1" onclick="submitFeedback()">Submit Feedback</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Hidden Print Area -->
+    <div id="print-slip" class="print-area" style="background:white; padding:40px;">
+        <h1 style="text-align:center;">Course Registration Slip</h1>
+        <hr>
+        <p><strong>Name:</strong> <span id="print-name"></span></p>
+        <p><strong>Reg No:</strong> <span id="print-reg"></span></p>
+        <p><strong>Date:</strong> <span id="print-date"></span></p>
+        <br>
+        <table border="1" cellpadding="10" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>Course Code</th>
+                    <th>Course Title</th>
+                    <th>Credits</th>
+                </tr>
+            </thead>
+            <tbody id="print-courses-body"></tbody>
+        </table>
+        <br><br>
+        <p style="text-align:center;">(System Generated Document)</p>
+    </div>
+
+    <script src="assets/js/dataService.js"></script>
+    <script src="assets/js/student.js"></script>
+</body>
+
+</html>

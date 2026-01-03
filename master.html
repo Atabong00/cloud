@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructor Portal - Veri-Grade</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles/main.css">
+    <style>
+        .portal-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+        }
+
+        .sidebar h2 {
+            color: var(--color-secondary);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            background: #f4f6f8;
+        }
+
+        .sidebar a {
+            display: block;
+            color: #ccc;
+            padding: 10px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #333;
+            color: white;
+        }
+
+        .posts-container {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .post-item {
+            border-bottom: 1px solid #eee;
+            padding: 1rem 0;
+        }
+
+        .post-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="portal-layout">
+        <div class="sidebar">
+            <h2>Instructor Panel</h2>
+            <a href="#" class="active" onclick="showSection('dashboard')">My Courses</a>
+            <a href="#" onclick="showSection('feedback')">Feedback</a>
+            <a href="#" onclick="AuthService.logout()" style="color: #ff6b6b; margin-top: 2rem;">Logout</a>
+        </div>
+
+        <div class="main-content">
+            <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                <h1>Instructor Dashboard</h1>
+                <span id="master-name" class="badge badge-warning">...</span>
+            </header>
+
+            <!-- Courses List -->
+            <div id="dashboard" class="content-section">
+                <div id="courses-grid" class="grid grid-2">
+                    <!-- Courses injected here -->
+                </div>
+
+                <!-- Specific Course View (Initially Hidden) -->
+                <div id="course-view" style="display:none; margin-top: 2rem;">
+                    <button class="btn btn-sm btn-secondary mb-1" onclick="backToDashboard()">← Back to Courses</button>
+                    <h2 id="view-course-name">Course Name</h2>
+
+                    <div class="tabs mb-1">
+                        <button class="btn btn-sm btn-primary" onclick="switchTab('board')">Course Board</button>
+                        <button class="btn btn-sm btn-secondary" onclick="switchTab('students')">Enrolled
+                            Students</button>
+                    </div>
+
+                    <!-- Board Tab -->
+                    <div id="tab-board">
+                        <div class="card mb-1">
+                            <h4>Post Announcement</h4>
+                            <input id="new-post-title" placeholder="Title (e.g. Exam Schedule)">
+                            <textarea id="new-post-content" rows="3" placeholder="Write something..."></textarea>
+                            <button class="btn btn-primary mt-1" onclick="postToBoard()">Post</button>
+                        </div>
+
+                        <div class="posts-container">
+                            <h3>Notice Board</h3>
+                            <div id="posts-list"></div>
+                        </div>
+                    </div>
+
+                    <!-- Students Tab -->
+                    <div id="tab-students" style="display:none">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Grading (Marks / Grade)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-list-body"></tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="feedback" class="content-section" style="display:none">
+                <h2>Send Feedback</h2>
+                <div class="card" style="max-width: 600px;">
+                    <p class="mb-1">Contact system administration.</p>
+                    <textarea id="master-feedback-msg" rows="4" placeholder="Your message..."></textarea>
+                    <button class="btn btn-primary mt-1" onclick="submitMasterFeedback()">Submit Feedback</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="assets/js/dataService.js"></script>
+    <script src="assets/js/master.js"></script>
+</body>
+
+</html>
