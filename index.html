@@ -6,22 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CertifyU - Secure Academic Credential Verification</title>
 
-    <!-- Fonts -->
+ 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap"
         rel="stylesheet">
 
-    <!-- QR Code Libs -->
+ 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
-    <!-- Styles -->
+   
     <link rel="stylesheet" href="assets/styles/main.css">
 
     <style>
-        /* Landing Specific Styles */
+      
         .hero {
             background-color: var(--color-primary);
             color: white;
@@ -67,7 +67,7 @@
             box-shadow: var(--shadow-md);
         }
 
-        /* Modal */
+     
         .modal {
             display: none;
             position: fixed;
@@ -121,7 +121,7 @@
         </div>
     </nav>
 
-    <!-- Hero -->
+    
     <section id="home" class="hero">
         <div class="container">
             <h1>Secure Academic Credential Verification</h1>
@@ -135,7 +135,7 @@
         </div>
     </section>
 
-    <!-- Features -->
+   
     <section id="features" class="features">
         <div class="container">
             <h2 class="text-center mb-1">Why Choose CertifyU?</h2>
@@ -164,7 +164,6 @@
         </div>
     </section>
 
-    <!-- Verification Section -->
     <section id="verify" class="verification-section">
         <div class="container">
             <h2>Verify a Certificate</h2>
@@ -193,10 +192,9 @@
                         onclick="stopQRScanner()">Stop Access</button>
                 </div>
 
-                <!-- Result Area -->
                 <div id="verify-result" class="mt-1"
                     style="display:none; text-align: left; padding: 1rem; border-radius: 4px;">
-                    <!-- JS will pop this -->
+               
                 </div>
             </div>
         </div>
@@ -229,12 +227,12 @@
 
 
 
-    <!-- Scripts -->
+
     <script src="assets/js/dataService.js"></script>
     <script>
 
 
-        // Verification Logic
+     
         let html5QrcodeScanner = null;
 
         function toggleVerifyMode(mode) {
@@ -271,7 +269,7 @@
                     performVerification(decodedText);
                 },
                 (errorMessage) => {
-                    // parse error, ignore loop
+                   
                 }
             ).catch(err => {
                 document.getElementById('scan-status').innerText = "Error starting camera: " + err;
@@ -290,13 +288,10 @@
         }
 
         function performVerification(text) {
-            // text could be a URL or an ID.
-            // If URL, extract ID or just go there.
-            // If ID, go to verify.html?id=ID
-
+         
             let targetId = text;
 
-            // Check if it's a URL
+            
             try {
                 const url = new URL(text);
                 const params = new URLSearchParams(url.search);
@@ -304,13 +299,14 @@
                     targetId = params.get('id');
                 }
             } catch (e) {
-                // Not a valid URL, assume it's the ID string
+                
             }
 
-            // Redirect to verification page
+            
             window.location.href = `verify.html?id=${targetId}`;
         }
     </script>
 </body>
+
 
 </html>
